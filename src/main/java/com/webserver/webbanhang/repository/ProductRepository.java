@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
  * @author HP
  */
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, Integer> {
 
-    public Optional<Product> findById(Integer id);
+ 
 }

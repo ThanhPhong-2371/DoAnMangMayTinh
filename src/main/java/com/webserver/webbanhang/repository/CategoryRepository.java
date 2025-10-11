@@ -14,9 +14,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * @author HP
  */
-public interface CategoryRepository extends JpaRepository<Category, Long>{
+public interface CategoryRepository extends JpaRepository<Category, Integer>{
 
-    public Optional<Category> findById(Integer id);
+   
 
    
 

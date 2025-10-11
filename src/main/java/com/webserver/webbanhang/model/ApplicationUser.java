@@ -4,6 +4,9 @@
  */
 package com.webserver.webbanhang.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,13 +24,16 @@ import java.util.List;
 import java.util.Set;
 import com.webserver.webbanhang.model.Role; // ✅ Entity Role bạn vừa tạo
 import java.util.ArrayList;
+
 /**
  *
  * @author HP
  */
+
 @Entity
 @Table(name = "users") // đặt tên bảng, ví dụ "users"
 public class ApplicationUser {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -43,25 +49,24 @@ public class ApplicationUser {
     private String phone;
     private String dob;
     private String avatar;
- 
-    private boolean isApproved = false;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    private boolean isApproved;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
-        name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
-    
-     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Cart> carts = new ArrayList<>();
+
+// ApplicationUser.java
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+ 
+    private List<Cart> carts;
 
 //    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
-  //  private List<Favourite> favourites;
-
+    //  private List<Favourite> favourites;
     // Getter & Setter
-
     public Integer getId() {
         return id;
     }
@@ -150,12 +155,10 @@ public class ApplicationUser {
         this.carts = carts;
     }
 
- //   public List<Favourite> getFavourites() {
+    //   public List<Favourite> getFavourites() {
 //        return favourites;
 //    }
-
- //   public void setFavourites(List<Favourite> favourites) {
- //       this.favourites = favourites;
- //   }
-   
+    //   public void setFavourites(List<Favourite> favourites) {
+    //       this.favourites = favourites;
+    //   }
 }

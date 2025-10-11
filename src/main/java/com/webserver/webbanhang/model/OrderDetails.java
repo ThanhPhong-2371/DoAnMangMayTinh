@@ -19,7 +19,7 @@ import java.math.BigDecimal;
  */
 @Entity
 @Table(name = "order_details")
-class OrderDetails {
+public class OrderDetails {
      @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

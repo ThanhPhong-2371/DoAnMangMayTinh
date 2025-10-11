@@ -4,18 +4,15 @@
  */
 package com.webserver.webbanhang.repository;
 
-import com.webserver.webbanhang.model.Brand;
+import com.webserver.webbanhang.model.ApplicationUser;
+import com.webserver.webbanhang.model.Cart;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author HP
  */
-@Repository
-public interface BrandRepository extends JpaRepository<Brand, Integer> {
-
-   
-    // Không cần thay đổi gì khác
-    
+public interface CartRepository extends JpaRepository<Cart, Integer> {
+   List<Cart> findByUser(ApplicationUser user);
 }

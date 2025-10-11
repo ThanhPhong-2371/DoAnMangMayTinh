@@ -5,6 +5,7 @@
 package com.webserver.webbanhang.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
@@ -14,9 +15,7 @@ import java.util.Optional;
 @Table(name = "brands")
 public class Brand {
 
-    public static Optional<Brand> findById(Integer id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+  
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -24,9 +23,18 @@ public class Brand {
     private String name;
 
     // Một brand có nhiều sản phẩm
-    @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "brand")
+    @JsonIgnore
     private List<Product> products;
+    public Brand() {
+}
 
+    public Brand(Integer id, String name, List<Product> products) {
+        this.id = id;
+        this.name = name;
+        this.products = products;
+    }
+    
     // Getter & Setter
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }

@@ -3,19 +3,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
 package com.webserver.webbanhang.repository;
-
-import com.webserver.webbanhang.model.Brand;
+import com.webserver.webbanhang.model.OrderDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+
+
 
 /**
  *
  * @author HP
  */
-@Repository
-public interface BrandRepository extends JpaRepository<Brand, Integer> {
-
-   
-    // Không cần thay đổi gì khác
-    
+public interface OrderDetailsRepository extends JpaRepository<OrderDetails, Integer> {
 }

@@ -4,6 +4,9 @@
  */
 package com.webserver.webbanhang.model;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,9 +21,11 @@ import jakarta.persistence.Transient;
  *
  * @author HP
  */
+
 @Entity
 @Table(name = "carts")
 public class Cart {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -31,20 +36,41 @@ public class Cart {
     @JoinColumn(name = "product_id")
     private Product product;
 
-     @ManyToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private ApplicationUser user;
 
     // Getter & Setter
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
+    public Integer getId() {
+        return id;
+    }
 
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-    public Product getProduct() { return product; }
-    public void setProduct(Product product) { this.product = product; }
+    public int getQuantity() {
+        return quantity;
+    }
 
-    public ApplicationUser getUser() { return user; }
-    public void setUser(ApplicationUser user) { this.user = user; }
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public ApplicationUser getUser() {
+        return user;
+    }
+
+    public void setUser(ApplicationUser user) {
+        this.user = user;
+    }
 }

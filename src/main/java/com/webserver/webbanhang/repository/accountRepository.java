@@ -4,18 +4,20 @@
  */
 package com.webserver.webbanhang.repository;
 
-import com.webserver.webbanhang.model.Brand;
+import com.webserver.webbanhang.model.ApplicationUser;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author HP
  */
-@Repository
-public interface BrandRepository extends JpaRepository<Brand, Integer> {
+public interface accountRepository extends JpaRepository<ApplicationUser, Integer> {
 
-   
-    // Không cần thay đổi gì khác
+  //  public static Optional<ApplicationUser> findById(Integer id);
+
+    public boolean existsById(Integer id);
+
+    public void deleteById(Integer id);
     
 }
