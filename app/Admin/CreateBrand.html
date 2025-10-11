@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm/Sửa Brand</title>
+    <link rel="stylesheet" href="../vendor/bootstrap/css/bootstrap.min.css">
+    <style>
+        .container {
+            max-width: 500px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2 id="formTitle">Thêm Brand</h2>
+        <form id="brandForm">
+            <input type="hidden" name="id" id="brandId">
+            <div class="form-group">
+                <label>Tên Brand</label>
+                <input type="text" class="form-control" name="name" required>
+            </div>
+            <button type="submit" class="btn btn-primary" id="saveBtn">Lưu</button>
+            <a href="IndexBrand.html" class="btn btn-secondary">Quay lại</a>
+        </form>
+        <div id="formMessage" class="mt-3"></div>
+    </div>
+
+    <script>
+        const apiUrl = "http://localhost:5443/admin/brands";
+
+        // Lấy id từ query string nếu có
+        function getQueryParam(name) {
+            const url = new URL(window.location.href);
+            return url.searchParams.get(name);
+        }
+        const brandId = getQueryParam('id');
+
+        if (brandId) {
+            document.getElementById('formTitle').innerText = "Sửa Brand";
+            document.getElementById('saveBtn').innerText = "Cập nhật";
+
+            fetch(apiUrl + "/" + brandId)
+                .then(res => res.json())
+                .then(b => {
+                    document.getElementById('brandId').value = b.id;
+                    document.getElementsByName('name')[0].value = b.name;
+                });
+        }
+
+        document.getElementById('brandForm').onsubmit = async function (e) {
+            e.preventDefault();
+            const form = this;
+            const brand = {
+                name: form.name.value
+            };
+            let method = "POST";
+            let url = apiUrl;
+            if (brandId) {
+                method = "PUT";
+                url += "/" + brandId;
+            }
+            const res = await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(brand)
+            });
+            if (res.ok) {
+                document.getElementById('formMessage').innerText = "Lưu thành công!";
+                setTimeout(() => {
+                    window.location.href = "IndexBrand.html";
+                }, 1000);
+            } else {
+                document.getElementById('formMessage').innerText = "Có lỗi xảy ra!";
+            }
+        };
+    </script>
+    <script>
+        // Lấy role từ localStorage
+        const roles = JSON.parse(localStorage.getItem("roles") || "[]");
+
+        if (!roles.includes("ROLE_ADMIN")) {
+            alert("Bạn không có quyền truy cập trang quản trị!");
+            window.location.href = "../login.html"; // Chuyển về login hoặc trang khác
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Trang chủ Admin</title>
+    <link rel="stylesheet" href="../vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            background: #f5f6fa;
+        }
+
+        .admin-dashboard {
+            max-width: 900px;
+            margin: 60px auto;
+        }
+
+        .dashboard-title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .card-admin {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            transition: transform 0.15s;
+            text-align: center;
+            padding: 32px 10px 24px 10px;
+            background: #fff;
+        }
+
+        .card-admin:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 8px 32px rgba(44, 62, 80, 0.12);
+        }
+
+        .card-admin i {
+            font-size: 38px;
+            margin-bottom: 18px;
+            color: #6c7ae0;
+        }
+
+        .card-admin .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #222;
+        }
+
+        .card-admin .card-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #6c7ae0;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .card-admin .card-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 767px) {
+            .admin-dashboard {
+                padding: 0 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-dashboard">
+        <h2 class="dashboard-title">Trang chủ Quản trị</h2>
+        <div class="row g-4">
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card-admin">
+                    <i class="fa-solid fa-box"></i>
+                    <div class="card-title">Quản lý Sản phẩm</div>
+                    <a href="IndexProduct.html" class="card-link">Xem danh sách</a>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card-admin">
+                    <i class="fa-solid fa-plus"></i>
+                    <div class="card-title">Thêm Sản phẩm</div>
+                    <a href="CreateProduct.html" class="card-link">Thêm mới</a>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card-admin">
+                    <i class="fa-solid fa-list"></i>
+                    <div class="card-title">Quản lý Danh mục</div>
+                    <a href="IndexCategory.html" class="card-link">Xem danh sách</a>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card-admin">
+                    <i class="fa-solid fa-tags"></i>
+                    <div class="card-title">Quản lý Thương hiệu</div>
+                    <a href="IndexBrand.html" class="card-link">Xem danh sách</a>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card-admin">
+                    <i class="fa-solid fa-users"></i>
+                    <div class="card-title">Quản lý Người dùng</div>
+                    <a href="IndexUser.html" class="card-link">Xem danh sách</a>
+                </div>
+            </div>
+            <!-- Thêm card khác nếu cần -->
+        </div>
+    </div>
+    <script>
+        // Lấy role từ localStorage
+        const roles = JSON.parse(localStorage.getItem("roles") || "[]");
+
+        if (!roles.includes("ROLE_ADMIN")) {
+            alert("Bạn không có quyền truy cập trang quản trị!");
+            window.location.href = "../login.html"; // Chuyển về login hoặc trang khác
+        }
+
+    </script>
+</body>
+
+</html>

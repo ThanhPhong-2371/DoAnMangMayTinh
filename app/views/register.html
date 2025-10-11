@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập</title>
+    <link rel="stylesheet" type="text/css" href="../css/main.css">
+    <link rel="stylesheet" href="../css/register.css">
+</head>
+
+<body>
+    <div class="register-container">
+        <h2>Đăng ký tài khoản</h2>
+        <form id="registerForm">
+            <label>Username:</label>
+            <input type="text" name="username" required><br>
+            <label>Password:</label>
+            <input type="password" name="password" required><br>
+            <label>Họ tên:</label>
+            <input type="text" name="fullName"><br>
+            <label>Email:</label>
+            <input type="email" name="email"><br>
+            <label>Số điện thoại:</label>
+            <input type="text" name="phone"><br>
+            <label>Ngày sinh:</label>
+            <input type="date" name="dob"><br>
+            <label>Avatar (URL):</label>
+            <input type="text" name="avatar"><br>
+            <label>Vai trò:</label>
+            <select name="role">
+                <option value="USER">Người dùng</option>
+                <option value="ADMIN">Quản trị viên</option>
+            </select>
+
+
+
+            <button type="submit">Đăng ký</button>
+        </form>
+        <p class="login-link">
+            Đã có tài khoản?
+            <a href="login.html">Đăng nhập ngay</a>
+        </p>
+
+        <div id="registerMessage"></div>
+    </div>
+    <script>
+        document.getElementById('registerForm').onsubmit = async function (e) {
+            e.preventDefault();
+            const form = this;
+            const user = {
+                username: form.username.value,
+                password: form.password.value,
+                fullName: form.fullName.value,
+                email: form.email.value,
+                phone: form.phone.value,
+                dob: form.dob.value,
+                avatar: form.avatar.value,
+
+            };
+
+            const role = form.role.value;
+
+            const res = await fetch(`http://localhost:5443/account/register?role=${role}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(user)
+            });
+
+
+            // ...existing code...
+            const data = await res.json();
+            document.getElementById('registerMessage').innerText = data.message;
+            if (data.success) {
+                localStorage.setItem("username", data.username);
+                window.location.href = "../index.html";
+            }
+
+            // ...existing code...
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Brand</title>
+    <link rel="stylesheet" href="../vendor/bootstrap/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h2>Danh sách Brand</h2>
+        <a href="CreateBrand.html" class="btn btn-success mb-3">+ Thêm Brand</a>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên Brand</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="brandTableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const apiUrl = "http://localhost:5443/admin/brands";
+
+        async function loadBrands() {
+            const res = await fetch(apiUrl);
+            const data = await res.json();
+            const tbody = document.getElementById("brandTableBody");
+            tbody.innerHTML = "";
+            data.forEach(b => {
+                tbody.innerHTML += `
+                <tr>
+                    <td>${b.id}</td>
+                    <td>${b.name}</td>
+                    <td>
+                        <a href="CreateBrand.html?id=${b.id}" class="btn btn-warning btn-sm">Sửa</a>
+                        <button class="btn btn-danger btn-sm" onclick="deleteBrand(${b.id})">Xóa</button>
+                    </td>
+                </tr>
+            `;
+            });
+        }
+
+        async function deleteBrand(id) {
+            if (confirm("Bạn có chắc muốn xóa Brand này?")) {
+                const res = await fetch(apiUrl + "/" + id, { method: "DELETE" });
+                if (res.ok) {
+                    alert("Xóa thành công!");
+                    loadBrands();
+                } else {
+                    alert("Có lỗi khi xóa!");
+                }
+            }
+        }
+
+        loadBrands();
+    </script>
+    <script>
+        // Lấy role từ localStorage
+        const roles = JSON.parse(localStorage.getItem("roles") || "[]");
+
+        if (!roles.includes("ROLE_ADMIN")) {
+            alert("Bạn không có quyền truy cập trang quản trị!");
+            window.location.href = "../login.html"; // Chuyển về login hoặc trang khác
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách Sản phẩm</title>
+    <link rel="stylesheet" href="../vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="app/css/main.css">
+    <style>
+        .container {
+            margin-top: 40px;
+        }
+
+        .table img {
+            max-width: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2 class="mb-4">Danh sách Sản phẩm</h2>
+        <!-- Bảng sản phẩm -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên</th>
+                    <th>Mô tả</th>
+                    <th>Ảnh</th>
+                    <th>Slug</th>
+                    <th>Giá</th>
+                    <th>Danh mục</th>
+                    <th>Brand</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="productTable"></tbody>
+        </table>
+    </div>
+    <script>
+        // Lấy role từ localStorage
+        const roles = JSON.parse(localStorage.getItem("roles") || "[]");
+
+        if (!roles.includes("ROLE_ADMIN")) {
+            alert("Bạn không có quyền truy cập trang quản trị!");
+            window.location.href = "../login.html"; // Chuyển về login hoặc trang khác
+        }
+
+    </script>
+    <script>
+        const apiUrl = "http://localhost:5443/admin/products";
+
+        // Lấy danh sách sản phẩm
+        function loadProducts() {
+            fetch(apiUrl)
+                .then(res => res.json())
+                .then(data => {
+                    const table = document.getElementById('productTable');
+                    table.innerHTML = '';
+
+                    data.forEach(p => {
+                        table.innerHTML += `
+        <tr>
+            <td>${p.id}</td>
+            <td>${p.name}</td>
+            <td>${p.description || ''}</td>
+            <td>${p.image ? `<img src="${p.image}" alt="" />` : ''}</td>
+            <td>${p.slug || ''}</td>
+            <td>${p.price}</td>
+            <td>${p.category ? p.category.name + ' (#' + p.category.id + ')' : ''}</td>
+            <td>${p.brand ? p.brand.name + ' (#' + p.brand.id + ')' : ''}</td>
+            <td>
+    <a class="btn btn-success btn-sm" href="CreateProduct.html">Thêm</a>
+    <a class="btn btn-info btn-sm" href="CreateProduct.html?id=${p.id}">Sửa</a>
+    <button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id})">Xóa</button>
+</td>
+        </tr>
+    `;
+                    });
+
+                });
+        }
+
+        // Hàm mẫu cho các thao tác (bạn cần tự hiện thực)
+        function addProduct() {
+            alert('Chức năng thêm sản phẩm!');
+            // Mở form thêm sản phẩm ở đây
+        }
+        function editProduct(id) {
+            alert('Chức năng sửa sản phẩm có id: ' + id);
+            // Mở form sửa sản phẩm ở đây
+        }
+        function deleteProduct(id) {
+            if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+                fetch(apiUrl + '/' + id, { method: 'DELETE' })
+                    .then(res => res.text())
+                    .then(msg => {
+                        alert(msg);
+                        loadProducts();
+                    });
+            }
+        }
+
+        // Load sản phẩm khi vào trang
+        loadProducts();
+    </script>
+</body>
+
+</html>

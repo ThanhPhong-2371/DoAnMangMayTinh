@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Danh mục</title>
+    <link rel="stylesheet" href="../vendor/bootstrap/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h2>Danh sách Danh mục</h2>
+        <a href="CreateCategory.html" class="btn btn-success mb-3">+ Thêm Danh mục</a>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên danh mục</th>
+                    <th>Mô tả</th>
+                    <th>Slug</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="categoryTableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const apiUrl = "http://localhost:5443/admin/categorys";
+
+        async function loadCategories() {
+            const res = await fetch(apiUrl);
+            const data = await res.json();
+            const tbody = document.getElementById("categoryTableBody");
+            tbody.innerHTML = "";
+            data.forEach(c => {
+                tbody.innerHTML += `
+                <tr>
+                    <td>${c.id}</td>
+                    <td>${c.name}</td>
+                    <td>${c.description || ""}</td>
+                    <td>${c.slug || ""}</td>
+                    <td>${c.status || ""}</td>
+                    <td>
+                        <a href="CreateCategory.html?id=${c.id}" class="btn btn-warning btn-sm">Sửa</a>
+                        <button class="btn btn-danger btn-sm" onclick="deleteCategory(${c.id})">Xóa</button>
+                    </td>
+                </tr>
+            `;
+            });
+        }
+
+        async function deleteCategory(id) {
+            if (confirm("Bạn có chắc muốn xóa danh mục này?")) {
+                const res = await fetch(apiUrl + "/" + id, { method: "DELETE" });
+                if (res.ok) {
+                    alert("Xóa thành công!");
+                    loadCategories();
+                } else {
+                    alert("Có lỗi khi xóa!");
+                }
+            }
+        }
+
+        loadCategories();
+    </script>
+    <script>
+        // Lấy role từ localStorage
+        const roles = JSON.parse(localStorage.getItem("roles") || "[]");
+
+        if (!roles.includes("ROLE_ADMIN")) {
+            alert("Bạn không có quyền truy cập trang quản trị!");
+            window.location.href = "../login.html"; // Chuyển về login hoặc trang khác
+        }
+
+    </script>
+</body>
+
+</html>
