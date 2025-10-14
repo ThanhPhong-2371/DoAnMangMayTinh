@@ -4,6 +4,7 @@
  */
 package com.webserver.webbanhang.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,6 +47,7 @@ public class Order {
 
     // Một Order có nhiều OrderDetails
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+     @JsonIgnore   
     private List<OrderDetails> orderDetails;
 
     // ===== Getter & Setter =====

@@ -31,20 +31,7 @@ public class AdminAccountController {
     public List<ApplicationUser> getAllAccount() {
         return AccountRepository.findAll();
     }
-    //@PutMapping("/{id}/lock")
-    // public String lockOrUnlockAccount(@PathVariable Integer id) {
-    //    Optional<ApplicationUser> accountOpt = accountRepository.findById(id);
-    //    if (accountOpt.isPresent()) {
-     //       ApplicationUser account = accountOpt.get();
-     //       account.setIsApproved(!account.isIsApproved()); // Đảo trạng thái khóa
-      //      AccountRepository.save(account);
-     //       return account.isIsApproved() ? "Tài khoản đã bị khóa!" : "Tài khoản đã được mở khóa!";
-     //   } else {
-      //      return "Không tìm thấy tài khoản!";
-        
-     //   }
-     
-    // }
+  
     @DeleteMapping("/{id}")
     public String deleteAccount(@PathVariable Integer id) {
         if (AccountRepository.existsById(id)) {
@@ -54,4 +41,22 @@ public class AdminAccountController {
             return "Không tìm thấy tài khoản!";
         }
     }
+      @PutMapping("/lock/{id}")
+    public String toggleLockAccount(@PathVariable Integer id) {
+        Optional<ApplicationUser> optionalUser = AccountRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            ApplicationUser user = optionalUser.get();
+            boolean newState = !user.isIsApproved(); // đảo ngược trạng thái
+            user.setIsApproved(newState);
+            AccountRepository.save(user);
+            return newState
+                    ? "🔓 Đã mở khóa tài khoản!"
+                    : "🔒 Đã khóa tài khoản!";
+        } else {
+            return "❌ Không tìm thấy tài khoản!";
+        }
+    } 
+
+
+    
 }

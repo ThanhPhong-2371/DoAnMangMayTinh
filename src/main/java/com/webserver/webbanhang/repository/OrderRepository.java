@@ -5,6 +5,7 @@
 package com.webserver.webbanhang.repository;
 
 import com.webserver.webbanhang.model.Order;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -12,4 +13,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author HP
  */
 public interface OrderRepository extends JpaRepository<Order, Integer> {
+        List<Order> findByUser_Id(Integer userId);
 }

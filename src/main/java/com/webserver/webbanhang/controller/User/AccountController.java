@@ -4,14 +4,19 @@ import com.webserver.webbanhang.model.ApplicationUser;
 import com.webserver.webbanhang.model.Role;
 import com.webserver.webbanhang.repository.RoleRepository;
 import com.webserver.webbanhang.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,6 +44,9 @@ public class AccountController {
     private RoleRepository roleRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+private AuthenticationManager authenticationManager;
+
 
     // 🟩 Đăng ký
     @PostMapping("/register")
@@ -78,41 +86,34 @@ public class AccountController {
     }
 
     // 🟦 Đăng nhập
-    @PostMapping("/login")
+     @PostMapping("/login")
     public Object login(@RequestBody ApplicationUser loginUser) {
-        Optional<ApplicationUser> userOpt = userRepository.findByUsername(loginUser.getUsername());
+        try {
+            // ✅ Gọi AuthenticationManager để Spring kiểm tra tài khoản
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword())
+            );
+            ApplicationUser user = (ApplicationUser) auth.getPrincipal();
+            return new LoginResponse(
+                    true,
+                    "Đăng nhập thành công!",
+                    user.getUsername(),
+                    user.getFullName(),
+                    user.getRoles().stream().map(Role::getName).toList(),
+                    user.getId()
+            );
 
-        if (userOpt.isPresent()) {
-            ApplicationUser user = userOpt.get();
-
-            if (passwordEncoder.matches(loginUser.getPassword(), user.getPassword())) {
-
-                // ✅ Gán quyền cho Spring Security
-                List<GrantedAuthority> authorities = user.getRoles()
-                        .stream()
-                        .map(role -> new SimpleGrantedAuthority(role.getName()))
-                        .collect(Collectors.toList());
-
-                Authentication auth = new UsernamePasswordAuthenticationToken(user, null, authorities);
-                SecurityContextHolder.getContext().setAuthentication(auth);
-
-                // 🟩 TRẢ THÊM user.getId()
-                return new LoginResponse(
-                        true,
-                        "Đăng nhập thành công!",
-                        user.getUsername(),
-                        user.getFullName(),
-                        user.getRoles().stream().map(Role::getName).toList(),
-                        user.getId()
-                );
-            }
+        } catch (LockedException e) {
+            return new LoginResponse(false, "Tài khoản đã bị khóa!", null, null, null, null);
+        } catch (BadCredentialsException e) {
+            return new LoginResponse(false, "Sai tên đăng nhập hoặc mật khẩu!", null, null, null, null);
+        } catch (AuthenticationException e) {
+            return new LoginResponse(false, "Lỗi xác thực!", null, null, null, null);
         }
-
-        return new LoginResponse(false, "Sai username hoặc password!", null, null, null, null);
     }
-
-    record LoginResponse(boolean success, String message, String username, String fullName, Object roles, Integer id) {
+    record LoginResponse(boolean success, String message, String username, String fullName, Object roles, Integer id) {}
 }
 
+  
 
-}
+

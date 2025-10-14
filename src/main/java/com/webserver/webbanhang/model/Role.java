@@ -4,6 +4,7 @@
  */
 package com.webserver.webbanhang.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,8 +29,10 @@ public class Role {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "roles")
-    private Set<ApplicationUser> users = new HashSet<>();
+   @ManyToMany(mappedBy = "roles")
+@JsonIgnore
+private Set<ApplicationUser> users = new HashSet<>();
+
 
     // Getter & Setter
     public Integer getId() {

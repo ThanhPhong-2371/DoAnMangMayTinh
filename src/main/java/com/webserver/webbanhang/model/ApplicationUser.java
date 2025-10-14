@@ -24,15 +24,18 @@ import java.util.List;
 import java.util.Set;
 import com.webserver.webbanhang.model.Role; // ✅ Entity Role bạn vừa tạo
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.stream.Collectors;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  *
  * @author HP
  */
-
 @Entity
 @Table(name = "users") // đặt tên bảng, ví dụ "users"
-public class ApplicationUser {
+public class ApplicationUser  implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,8 +52,8 @@ public class ApplicationUser {
     private String phone;
     private String dob;
     private String avatar;
-
-    private boolean isApproved;
+    @Column(nullable = false)
+    private boolean isApproved = true;
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
             name = "users_roles",
@@ -59,14 +62,39 @@ public class ApplicationUser {
     )
     private Set<Role> roles = new HashSet<>();
 
-// ApplicationUser.java
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
- 
+    @JsonIgnore
     private List<Cart> carts;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(r -> (GrantedAuthority) r::getName)
+                .collect(Collectors.toList());
+    }
 
-//    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
-    //  private List<Favourite> favourites;
-    // Getter & Setter
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    // 🔥 Đây là dòng quyết định: false => bị khóa => không thể đăng nhập
+    @Override
+    public boolean isAccountNonLocked() {
+        return isApproved;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isApproved;
+    }
+   
+    
+    
     public Integer getId() {
         return id;
     }

@@ -21,7 +21,6 @@ import java.util.UUID;
  */
 @Service
 public class CheckoutService {
-
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
 
@@ -33,15 +32,12 @@ public class CheckoutService {
     @Transactional
     public Order checkout(ApplicationUser user, String shippingAddress, String shippingMethod) {
         List<Cart> carts = cartRepository.findByUser(user);
-
-        if (carts.isEmpty()) {
-            throw new RuntimeException("Giỏ hàng trống!");
-        }
+        if (carts.isEmpty()) throw new RuntimeException("Giỏ hàng trống!");
 
         Order order = new Order();
         order.setUser(user);
         order.setCode("ORD-" + UUID.randomUUID().toString().substring(0, 8));
-        order.setCustomerName(user.getFullName()); // nếu có field này
+        order.setCustomerName(user.getFullName());
         order.setShippingAddress(shippingAddress);
         order.setShippingMethod(shippingMethod);
 
@@ -49,29 +45,27 @@ public class CheckoutService {
         List<OrderDetails> detailsList = new ArrayList<>();
 
         for (Cart cart : carts) {
-            BigDecimal unitPrice = BigDecimal.valueOf(cart.getProduct().getPrice()); // chuyển Double -> BigDecimal
+            BigDecimal unitPrice = BigDecimal.valueOf(cart.getProduct().getPrice());
             OrderDetails detail = new OrderDetails();
             detail.setOrder(order);
             detail.setProduct(cart.getProduct());
             detail.setQuantity(cart.getQuantity());
-
-            // lưu đơn giá (unit price) vào order detail
             detail.setPrice(unitPrice);
-
-            // tổng += đơn giá * số lượng
             totalAmount = totalAmount.add(unitPrice.multiply(BigDecimal.valueOf(cart.getQuantity())));
-
             detailsList.add(detail);
         }
 
-        order.setTotalAmount(totalAmount);
+        // Thiết lập 2 chiều
+        detailsList.forEach(d -> d.setOrder(order));
         order.setOrderDetails(detailsList);
+        order.setTotalAmount(totalAmount);
 
-        // Lưu order + orderDetails
+        // Lưu order
         Order savedOrder = orderRepository.save(order);
 
-        // Xoá giỏ hàng sau khi checkout
+        // Xóa giỏ hàng
         cartRepository.deleteAll(carts);
+        cartRepository.flush(); // đảm bảo delete thật
 
         return savedOrder;
     }
