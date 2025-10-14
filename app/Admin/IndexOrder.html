@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý đơn hàng</title>
+    <link rel="stylesheet" href="../vendor/bootstrap/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h2 class="mb-4">📦 Danh sách tất cả đơn hàng</h2>
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Mã đơn</th>
+                    <th>Khách hàng</th>
+                    <th>Email</th>
+                    <th>Tổng tiền</th>
+                    <th>Ngày tạo</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="orderTable"></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function loadOrders() {
+            const res = await fetch("http://localhost:5443/admin/orders");
+            const orders = await res.json();
+
+            const table = document.getElementById("orderTable");
+            table.innerHTML = "";
+
+            orders.forEach(o => {
+                const statusText = ["🕓 Chờ duyệt", "✅ Đã xác nhận", "🚚 Đang giao", "✔️ Hoàn tất", "❌ Hủy"][o.status] || "Không rõ";
+                table.innerHTML += `
+        <tr>
+          <td>${o.id}</td>
+          <td>${o.code}</td>
+          <td>${o.user ? o.user.fullName || o.user.username : "Không có"}</td>
+          <td>${o.user ? o.user.email || "" : ""}</td>
+          <td>${o.totalAmount}</td>
+          <td>${new Date(o.createdDate).toLocaleString()}</td>
+          <td>${statusText}</td>
+          <td>
+            <button class="btn btn-success btn-sm" onclick="updateStatus(${o.id}, 1)">Duyệt</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteOrder(${o.id})">Xóa</button>
+          </td>
+        </tr>
+      `;
+            });
+        }
+
+        async function updateStatus(id, status) {
+            const res = await fetch(`http://localhost:5443/admin/orders/${id}/status?status=${status}`, { method: "PUT" });
+            const msg = await res.text();
+            alert(msg);
+            loadOrders();
+        }
+
+        async function deleteOrder(id) {
+            if (confirm("Bạn có chắc muốn xóa đơn hàng này?")) {
+                const res = await fetch(`http://localhost:5443/admin/orders/${id}`, { method: "DELETE" });
+                const msg = await res.text();
+                alert(msg);
+                loadOrders();
+            }
+        }
+
+        loadOrders();
+    </script>
+</body>
+
+</html>

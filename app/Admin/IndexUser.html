@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách tài khoản</title>
+    <link rel="stylesheet" href="../vendor/bootstrap/css/bootstrap.min.css">
+    <style>
+        .container {
+            margin-top: 40px;
+        }
+
+        .status-active {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status-locked {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2 class="mb-4">Danh sách tài khoản</h2>
+
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Tên đăng nhập</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="userTable"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // Kiểm tra quyền Admin trước khi vào trang
+        const roles = JSON.parse(localStorage.getItem("roles") || "[]");
+        if (!roles.includes("ROLE_ADMIN")) {
+            alert("Bạn không có quyền truy cập trang quản trị!");
+            window.location.href = "../login.html";
+        }
+    </script>
+
+    <script>
+        const apiUrl = "http://localhost:5443/admin/accounts";
+
+        // Tải danh sách tài khoản
+        async function loadUsers() {
+            const res = await fetch(apiUrl);
+            const users = await res.json();
+
+            const table = document.getElementById("userTable");
+            table.innerHTML = "";
+
+            users.forEach(u => {
+                const statusClass = u.isApproved ? "status-active" : "status-locked";
+                const statusText = u.isApproved ? "✅ Hoạt động" : "🚫 Bị khóa";
+                const lockBtnText = u.isApproved ? "Khóa" : "Mở khóa";
+                const lockBtnClass = u.isApproved ? "btn-warning" : "btn-success";
+
+                table.innerHTML += `
+          <tr>
+            <td>${u.id}</td>
+            <td>${u.username}</td>
+            <td>${u.fullName || ""}</td>
+            <td>${u.email || ""}</td>
+            <td class="${statusClass}">${statusText}</td>
+            <td>
+              <button class="btn ${lockBtnClass} btn-sm me-2" onclick="toggleLock(${u.id})">${lockBtnText}</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id})">Xóa</button>
+            </td>
+          </tr>
+        `;
+            });
+        }
+
+        // Khóa / mở khóa tài khoản
+        async function toggleLock(id) {
+            const res = await fetch(`${apiUrl}/lock/${id}`, { method: "PUT" });
+            const msg = await res.text();
+            alert(msg);
+            loadUsers();
+        }
+
+        // Xóa tài khoản
+        async function deleteUser(id) {
+            if (confirm("Bạn có chắc muốn xóa tài khoản này?")) {
+                const res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+                const msg = await res.text();
+                alert(msg);
+                loadUsers();
+            }
+        }
+
+        // Tải dữ liệu khi mở trang
+        loadUsers();
+    </script>
+</body>
+
+</html>
