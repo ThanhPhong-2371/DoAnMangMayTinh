@@ -77,23 +77,31 @@
         document.getElementById('categoryForm').onsubmit = async function (e) {
             e.preventDefault();
             const form = this;
+
+            // Chuẩn bị dữ liệu
             const category = {
                 name: form.name.value,
                 description: form.description.value,
                 slug: form.slug.value,
                 status: form.status.value
             };
+
             let method = "POST";
             let url = apiUrl;
+
+            // Nếu có ID (đang sửa)
             if (categoryId) {
                 method = "PUT";
                 url += "/" + categoryId;
+                category.id = categoryId; // ✅ chỉ thêm id khi PUT
             }
+
             const res = await fetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(category)
             });
+
             if (res.ok) {
                 document.getElementById('formMessage').innerText = "Lưu thành công!";
                 setTimeout(() => {
@@ -103,6 +111,7 @@
                 document.getElementById('formMessage').innerText = "Có lỗi xảy ra!";
             }
         };
+
     </script>
 </body>
 
