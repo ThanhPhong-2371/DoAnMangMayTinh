@@ -36,11 +36,7 @@ public class Category {
     private String slug;
 
     private Integer status;
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    @com.fasterxml.jackson.annotation.JsonIgnore
-    public List<Product> getProducts() {
-        return products;
-    }
+   
 
     public void setProducts(List<Product> products) {
         this.products = products;

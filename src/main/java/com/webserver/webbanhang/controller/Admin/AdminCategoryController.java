@@ -47,7 +47,6 @@ public class AdminCategoryController {
         Category category =categoryRepository.findById(id).orElseThrow(()-> new RuntimeException("Product not found"+id));
         category.setName(categorys.getName());
         category.setDescription(categorys.getDescription());
-        category.setProducts(categorys.getProducts());
         category.setSlug(categorys.getSlug());
         category.setStatus(categorys.getStatus());
         return categoryRepository.save(category);

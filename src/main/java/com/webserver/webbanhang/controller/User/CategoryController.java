@@ -20,8 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/categorys")
 public class CategoryController {
     @Autowired
-    CategoryRepository categoryRepository;
-    
+    CategoryRepository categoryRepository;    
      @GetMapping
     public List<Category> getAllCategorys(){
         return  categoryRepository.findAll();
