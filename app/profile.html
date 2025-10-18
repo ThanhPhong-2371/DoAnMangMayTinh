@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hồ sơ cá nhân & Đơn hàng</title>
+    <link rel="stylesheet" href="../vendor/bootstrap/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(145deg, #6a11cb, #2575fc);
+            font-family: "Poppins", sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .profile-card {
+            background: #ffffff;
+            border-radius: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            max-width: 950px;
+            width: 100%;
+            overflow: hidden;
+            padding: 40px 50px;
+            margin: 40px 0;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            margin: 0 auto 15px;
+        }
+
+        .avatar-container::before {
+            content: "";
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            background-clip: padding-box;
+            animation: rotateBorder 6s linear infinite;
+        }
+
+        @keyframes rotateBorder {
+            from {
+                transform: rotate(0);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .avatar-container img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            position: relative;
+            z-index: 1;
+            border: 5px solid white;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            border-bottom: 2px solid #eee;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #555;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #2575fc;
+            border-bottom: 3px solid #2575fc;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px 40px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input.form-control {
+            border-radius: 12px;
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            transition: 0.3s;
+        }
+
+        input.form-control:focus {
+            border-color: #2575fc;
+            box-shadow: 0 0 6px rgba(37, 117, 252, 0.4);
+        }
+
+        .save-btn {
+            margin-top: 30px;
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            color: white;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .save-btn:hover {
+            background: linear-gradient(90deg, #2575fc, #6a11cb);
+            box-shadow: 0 4px 12px rgba(106, 17, 203, 0.4);
+            transform: translateY(-2px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #eee;
+            padding: 10px 12px;
+            text-align: center;
+        }
+
+        table th {
+            background-color: #f5f6fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .status-pending {
+            color: #ff9800;
+            font-weight: 600;
+        }
+
+        .status-confirmed {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="profile-card">
+        <div class="avatar-container">
+            <img id="avatarPreview" src="https://via.placeholder.com/130" alt="Avatar">
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('profile')">👤 Hồ sơ cá nhân</button>
+            <button class="tab-btn" onclick="switchTab('orders')">📦 Đơn hàng của tôi</button>
+        </div>
+
+        <div id="profile" class="tab-content active">
+            <form id="profileForm">
+                <div class="profile-grid">
+                    <div>
+                        <label>Tên đăng nhập</label>
+                        <input type="text" id="username" class="form-control" readonly>
+                    </div>
+                    <div>
+                        <label>Họ tên</label>
+                        <input type="text" id="fullName" class="form-control" placeholder="Nhập họ tên">
+                    </div>
+                    <div>
+                        <label>Email</label>
+                        <input type="email" id="email" class="form-control" placeholder="Nhập email">
+                    </div>
+                    <div>
+                        <label>Số điện thoại</label>
+                        <input type="text" id="phone" class="form-control" placeholder="Nhập số điện thoại">
+                    </div>
+                    <div>
+                        <label>Ngày sinh</label>
+                        <input type="date" id="dob" class="form-control">
+                    </div>
+                    <div>
+                        <label>Ảnh đại diện (URL)</label>
+                        <input type="text" id="avatar" class="form-control" placeholder="Dán link ảnh đại diện">
+                    </div>
+                </div>
+                <button type="button" class="save-btn" onclick="updateProfile()">💾 Lưu thay đổi</button>
+            </form>
+        </div>
+
+        <div id="orders" class="tab-content">
+            <h5 class="mb-3 text-center">📋 Danh sách đơn hàng</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Mã đơn</th>
+                            <th>Tổng tiền</th>
+                            <th>Ngày tạo</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderTable">
+                        <tr>
+                            <td colspan="5">Đang tải...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+            alert("Vui lòng đăng nhập trước!");
+            window.location.href = "login.html";
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+            document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+            document.querySelector(`.tab-btn[onclick*="${tabId}"]`).classList.add("active");
+            document.getElementById(tabId).classList.add("active");
+
+            if (tabId === "orders") loadOrders();
+        }
+
+        async function loadProfile() {
+            const res = await fetch(`http://localhost:5443/account/profile/${userId}`);
+            const user = await res.json();
+
+            document.getElementById("username").value = user.username || "";
+            document.getElementById("fullName").value = user.fullName || "";
+            document.getElementById("email").value = user.email || "";
+            document.getElementById("phone").value = user.phone || "";
+            document.getElementById("dob").value = user.dob || "";
+            document.getElementById("avatar").value = user.avatar || "";
+            document.getElementById("avatarPreview").src = user.avatar || "https://via.placeholder.com/130";
+        }
+
+        async function updateProfile() {
+            const updated = {
+                fullName: document.getElementById("fullName").value,
+                email: document.getElementById("email").value,
+                phone: document.getElementById("phone").value,
+                dob: document.getElementById("dob").value,
+                avatar: document.getElementById("avatar").value
+            };
+
+            const res = await fetch(`http://localhost:5443/account/profile/${userId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updated)
+            });
+
+            const msg = await res.json();
+            alert(msg.message);
+            document.getElementById("avatarPreview").src = updated.avatar || "https://via.placeholder.com/130";
+        }
+
+        async function loadOrders() {
+            const table = document.getElementById("orderTable");
+            try {
+                const res = await fetch(`http://localhost:5443/account/orders/${userId}`);
+                const orders = await res.json();
+
+                if (orders.length === 0) {
+                    table.innerHTML = `<tr><td colspan="5">Bạn chưa có đơn hàng nào.</td></tr>`;
+                    return;
+                }
+
+                table.innerHTML = "";
+                orders.forEach(o => {
+                    const statusClass = o.status === 0 ? "status-pending" : "status-confirmed";
+                    const statusText = o.status === 0 ? "⏳ Chờ xác nhận" : "✅ Đã xác nhận";
+                    table.innerHTML += `
+            <tr>
+              <td>${o.id}</td>
+              <td>${o.code}</td>
+              <td>$${o.totalAmount}</td>
+              <td>${new Date(o.createdDate).toLocaleString()}</td>
+              <td class="${statusClass}">${statusText}</td>
+            </tr>`;
+                });
+            } catch (e) {
+                console.error(e);
+                table.innerHTML = `<tr><td colspan="5">Không thể tải danh sách đơn hàng.</td></tr>`;
+            }
+        }
+
+        loadProfile();
+    </script>
+
+</body>
+
+</html>

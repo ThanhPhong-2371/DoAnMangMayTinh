@@ -228,12 +228,7 @@
 								</h2>
 							</div>
 
-							<div class="layer-slick1 animated visible-false" data-appear="zoomIn" data-delay="1600">
-								<a href="product.html"
-									class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
-									Shop Now
-								</a>
-							</div>
+
 						</div>
 					</div>
 				</div>
@@ -1059,6 +1054,94 @@
 			});
 		});
 	</script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			// --- Gắn sự kiện sau khi Brand & Category được load ---
+			setTimeout(() => {
+				addFilterEvents();
+			}, 1000);
+		});
+
+		function addFilterEvents() {
+			// Lấy danh sách các link Brand
+			document.querySelectorAll("#brand-menu a").forEach(a => {
+				a.addEventListener("click", function (e) {
+					e.preventDefault();
+					const brandName = this.textContent.trim();
+					filterProductsBy("brand", brandName);
+				});
+			});
+
+			// Lấy danh sách các link Category
+			document.querySelectorAll("#category-menu a").forEach(a => {
+				a.addEventListener("click", function (e) {
+					e.preventDefault();
+					const categoryName = this.textContent.trim();
+					filterProductsBy("category", categoryName);
+				});
+			});
+		}
+
+		// Hàm lọc sản phẩm theo brand hoặc category
+		async function filterProductsBy(type, value) {
+			try {
+				const res = await fetch("http://localhost:5443/products");
+				const products = await res.json();
+
+				let filtered = products.filter(p => {
+					if (type === "brand") {
+						return p.brand && p.brand.name.toLowerCase() === value.toLowerCase();
+					}
+					if (type === "category") {
+						return p.category && p.category.name.toLowerCase() === value.toLowerCase();
+					}
+					return true;
+				});
+
+				renderProducts(filtered);
+			} catch (err) {
+				console.error("Lỗi khi lọc sản phẩm:", err);
+			}
+		}
+
+		// Hàm hiển thị lại sản phẩm
+		function renderProducts(products) {
+			const productList = document.getElementById("product-list");
+			productList.innerHTML = "";
+
+			if (products.length === 0) {
+				productList.innerHTML = "<div class='col-12 text-center text-muted'>Không có sản phẩm nào.</div>";
+				return;
+			}
+
+			products.forEach(p => {
+				productList.innerHTML += `
+				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item ${p.category ? p.category.name.toLowerCase() : ''}">
+					<div class="block2">
+						<div class="block2-pic hov-img0">
+							<img src="${p.image || 'images/default-product.jpg'}" alt="IMG-PRODUCT">
+							<a href="#" onclick="viewProduct(${p.id}); return false;"
+								class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
+								Quick View
+							</a>
+						</div>
+						<div class="block2-txt flex-w flex-t p-t-14">
+							<div class="block2-txt-child1 flex-col-l ">
+								<a href="product-detail.html?id=${p.id}" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+									${p.name}
+								</a>
+								<span class="stext-105 cl3">
+									$${p.price}
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			`;
+			});
+		}
+	</script>
+
 </body>
 
 </html>
