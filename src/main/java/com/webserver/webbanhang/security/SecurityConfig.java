@@ -1,4 +1,5 @@
 package com.webserver.webbanhang.security;
+
 import com.webserver.webbanhang.model.CustomUserDetailsService;
 import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,40 +26,37 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .authenticationProvider(authenticationProvider())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/account/**").permitAll()  // cho phép gọi API login/register
+                .csrf(csrf -> csrf.disable())// Tắt CSRF (REST API không cần)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))// Cấu hình CORS Cho phép frontend (localhost:5500) gửi request đến.
+                .authenticationProvider(authenticationProvider())// Gắn Authentication Provider
+                .authorizeHttpRequests(auth -> auth// định nghĩa quyền truy cập theo URL.
+                .requestMatchers("/account/**").permitAll() // cho phép gọi API login/register
                 .requestMatchers("/admin/**").permitAll()
-                
                 .anyRequest().permitAll()
-                    
-                
-            )
-            // ❌ Bỏ phần formLogin
-            .httpBasic(httpBasic -> httpBasic.disable()) // Không dùng login form mặc định
-            .formLogin(form -> form.disable()) // ❌ Tắt form login của Spring
-            .logout(logout -> logout
+                )
+                // ❌ Bỏ phần formLogin
+                .httpBasic(httpBasic -> httpBasic.disable()) // Không dùng login form mặc định
+                .formLogin(form -> form.disable()) // ❌ Tắt form login của Spring
+                .logout(logout -> logout
                 .logoutUrl("/account/logout")
                 .logoutSuccessHandler((req, res, auth) -> {
                     res.setContentType("application/json;charset=UTF-8");
                     res.getWriter().write("{\"success\": true, \"message\": \"Đăng xuất thành công!\"}");
                 })
                 .permitAll()
-            );
-          
-           
+                );
+
         return http.build();
     }
+    //Quản lý toàn bộ quá trình xác thực.
     @Bean
-public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-    return http.getSharedObject(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder.class)
-            .authenticationProvider(authenticationProvider())
-            .build();
-}
-
-
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder.class)
+                .authenticationProvider(authenticationProvider())
+                .build();
+    }
+    //Bộ xử lý xác thực người dùng kiểu “Username + Password”, lấy thông tin từ database.
+    //“Lấy user từ DB bằng CustomUserDetailsService, rồi kiểm tra password với BCryptPasswordEncoder.”
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -66,10 +64,13 @@ public AuthenticationManager authenticationManager(HttpSecurity http) throws Exc
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
-     @Bean
+    //Lưu thông tin đăng nhập của người dùng vào HttpSession.
+    //Khi user login thành công, session chứa SecurityContext giúp nhận diện user trong các request tiếp theo.
+    @Bean
     public SecurityContextRepository securityContextRepository() {
         return new HttpSessionSecurityContextRepository();
     }
+   //Cho phép trình duyệt ở cổng khác (localhost:5500) gọi API của bạn.
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();

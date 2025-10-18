@@ -27,23 +27,23 @@ public class AdminOrderController {
       @Autowired
     private OrderRepository orderRepository;
 
-    // 🟩 Lấy toàn bộ đơn hàng của tất cả tài khoản
+ 
     @GetMapping
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
 
-    // 🟦 Lấy chi tiết 1 đơn hàng theo ID
+   
     @GetMapping("/{id}")
     public Object getOrderById(@PathVariable Integer id) {
         Optional<Order> orderOpt = orderRepository.findById(id);
         if (orderOpt.isPresent()) {
             return orderOpt.get();
         }
-        return "❌ Không tìm thấy đơn hàng!";
+        return " Không tìm thấy đơn hàng!";
     }
 
-    // 🟨 Cập nhật trạng thái đơn hàng (0: Chờ duyệt, 1: Xác nhận, 2: Giao hàng, 3: Hoàn tất, 4: Hủy)
+  
     @PutMapping("/{id}/status")
     public String updateOrderStatus(@PathVariable Integer id, @RequestParam int status) {
         Optional<Order> orderOpt = orderRepository.findById(id);
@@ -51,21 +51,21 @@ public class AdminOrderController {
             Order order = orderOpt.get();
             order.setStatus(status);
             orderRepository.save(order);
-            return "✅ Cập nhật trạng thái đơn hàng thành công!";
+            return " Cập nhật trạng thái đơn hàng thành công!";
         }
-        return "❌ Không tìm thấy đơn hàng!";
+        return " Không tìm thấy đơn hàng!";
     }
 
      
 
-    // 🔴 Xóa đơn hàng
+    
     @DeleteMapping("/{id}")
     public String deleteOrder(@PathVariable Integer id) {
         if (orderRepository.existsById(id)) {
             orderRepository.deleteById(id);
-            return "🗑️ Xóa đơn hàng thành công!";
+            return " Xóa đơn hàng thành công!";
         } else {
-            return "❌ Không tìm thấy đơn hàng!";
+            return " Không tìm thấy đơn hàng!";
         }
     }
 }

@@ -6,6 +6,7 @@ package com.webserver.webbanhang.repository;
 
 
 import com.webserver.webbanhang.model.Product;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,10 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
+   List<Product> findByCategory_Name(String categoryName);
 
+    List<Product> findByBrand_Name(String brandName);
+
+    List<Product> findByCategory_NameAndBrand_Name(String categoryName, String brandName);
  
 }
